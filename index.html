@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KAGAMI AI — 貢献を映す。組織が変わる。</title>
+<meta name="description" content="KAGAMI AIは、従業員の日々の貢献をAIが見つけて伝える、中小企業向けAI人事変革SaaS。1on1の質が変わり、組織の状態が一目でわかる。">
+<meta property="og:title" content="KAGAMI AI — 貢献を映す。組織が変わる。">
+<meta property="og:description" content="従業員の貢献をAIが見つけて伝える。1on1が変わる。組織が見える。中小企業のためのAI人事変革SaaS。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://kagami-ai.pages.dev">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --c-brand:#1e3a5f;
+  --c-brand-light:#2d5a8e;
+  --c-brand-pale:#e8f0fa;
+  --c-accent:#e67e22;
+  --c-accent-hover:#d35400;
+  --c-success:#27ae60;
+  --c-text:#2c3e50;
+  --c-text-light:#6b7b8d;
+  --c-bg:#ffffff;
+  --c-bg-warm:#f8f6f3;
+  --c-bg-blue:#f0f5fb;
+  --c-border:#e0e6ed;
+  --fs-hero:clamp(1.4rem,1rem + 2.5vw,3rem);
+  --fs-section-title:clamp(1.1rem,.8rem + 1.5vw,2rem);
+  --fs-section-sub:clamp(.85rem,.75rem + .4vw,1.05rem);
+  --fs-card-title:clamp(.88rem,.8rem + .3vw,1.05rem);
+  --fs-body:clamp(.8rem,.72rem + .3vw,.9rem);
+  --fs-small:clamp(.7rem,.65rem + .2vw,.8rem);
+  --fs-stat:clamp(1.4rem,1rem + 1.5vw,2.2rem);
+  --fs-cta-title:clamp(1.2rem,.9rem + 2vw,2.2rem);
+  --fs-btn:clamp(.85rem,.78rem + .3vw,1rem);
+  --space-section:clamp(48px,5vw + 20px,100px);
+  --space-container:clamp(16px,2vw + 8px,28px);
+  --radius:12px;
+  --shadow:0 4px 24px rgba(30,58,95,.08);
+  --shadow-hover:0 8px 40px rgba(30,58,95,.14);
+}
+html{scroll-behavior:smooth}
+body{font-family:"Noto Sans JP",sans-serif;color:var(--c-text);background:var(--c-bg);line-height:1.7;-webkit-font-smoothing:antialiased}
+.nb{display:inline-block}
+.container{max-width:1040px;margin:0 auto;padding:0 var(--space-container)}
+img{max-width:100%;height:auto}
+
+/* === Header === */
+.header{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--c-border);transition:box-shadow .3s}
+.header.scrolled{box-shadow:0 2px 16px rgba(0,0,0,.06)}
+.header-inner{display:flex;align-items:center;justify-content:space-between;max-width:1040px;margin:0 auto;padding:12px var(--space-container)}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--c-brand)}
+.logo-icon{width:36px;height:36px}
+.logo-text{font-size:1.1rem;font-weight:800;letter-spacing:.02em}
+.header-cta{background:var(--c-accent);color:#fff;border:none;padding:10px 24px;border-radius:8px;font-size:var(--fs-small);font-weight:700;cursor:pointer;transition:background .2s,transform .2s;font-family:inherit}
+.header-cta:hover{background:var(--c-accent-hover);transform:translateY(-1px)}
+
+/* === Hero === */
+.hero{padding:clamp(100px,12vw,160px) 0 var(--space-section);background:linear-gradient(170deg,#f0f5fb 0%,#fff 60%,#f8f6f3 100%)}
+.hero-inner{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center}
+.hero-text h1{font-size:var(--fs-hero);font-weight:800;line-height:1.35;color:var(--c-brand);margin-bottom:16px}
+.hero-text .subtitle{font-size:var(--fs-section-sub);color:var(--c-text-light);margin-bottom:28px;line-height:1.8}
+.hero-cta-group{display:flex;gap:12px;flex-wrap:wrap}
+.btn-primary{display:inline-flex;align-items:center;gap:8px;background:var(--c-accent);color:#fff;padding:14px 32px;border-radius:10px;font-size:var(--fs-btn);font-weight:700;text-decoration:none;transition:all .2s;border:none;cursor:pointer;font-family:inherit}
+.btn-primary:hover{background:var(--c-accent-hover);transform:translateY(-2px);box-shadow:0 6px 20px rgba(230,126,34,.3)}
+.hero-micro{font-size:var(--fs-small);color:var(--c-text-light);margin-top:12px}
+.hero-svg{width:100%;max-width:480px;margin:0 auto}
+
+/* === Trust Bar === */
+.trust-bar{background:var(--c-brand);padding:20px 0}
+.trust-items{display:flex;justify-content:center;gap:clamp(24px,4vw,56px);flex-wrap:wrap}
+.trust-item{text-align:center;color:#fff}
+.trust-item .num{font-size:var(--fs-stat);font-weight:800;display:block;line-height:1.2}
+.trust-item .label{font-size:var(--fs-small);opacity:.8}
+
+/* === Section common === */
+.section{padding:var(--space-section) 0}
+.section-header{text-align:center;margin-bottom:clamp(32px,4vw,56px)}
+.section-header .tag{display:inline-block;background:var(--c-brand-pale);color:var(--c-brand);font-size:var(--fs-small);font-weight:700;padding:4px 16px;border-radius:20px;margin-bottom:12px}
+.section-header h2{font-size:var(--fs-section-title);font-weight:800;color:var(--c-brand);line-height:1.4}
+.section-header p{font-size:var(--fs-section-sub);color:var(--c-text-light);margin-top:8px}
+
+/* === Problems === */
+.problems{background:var(--c-bg-warm)}
+.problem-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}
+.problem-card{background:#fff;border-radius:var(--radius);padding:24px;border-left:4px solid #e74c3c;box-shadow:var(--shadow)}
+.problem-card .icon{font-size:1.5rem;margin-bottom:8px}
+.problem-card h3{font-size:var(--fs-card-title);font-weight:700;margin-bottom:6px}
+.problem-card p{font-size:var(--fs-body);color:var(--c-text-light);line-height:1.7}
+
+/* === CTA Mid === */
+.cta-mid{background:linear-gradient(135deg,var(--c-brand) 0%,var(--c-brand-light) 100%);padding:clamp(32px,4vw,56px) 0;text-align:center}
+.cta-mid h2{font-size:var(--fs-cta-title);font-weight:800;color:#fff;margin-bottom:8px}
+.cta-mid p{color:rgba(255,255,255,.8);font-size:var(--fs-body);margin-bottom:20px}
+.btn-white{display:inline-flex;align-items:center;gap:8px;background:#fff;color:var(--c-brand);padding:14px 32px;border-radius:10px;font-size:var(--fs-btn);font-weight:700;text-decoration:none;transition:all .2s;border:none;cursor:pointer;font-family:inherit}
+.btn-white:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.2)}
+
+/* === Before/After === */
+.ba-grid{display:grid;grid-template-columns:1fr auto 1fr;gap:20px;align-items:stretch}
+.ba-card{background:#fff;border-radius:var(--radius);padding:28px;box-shadow:var(--shadow)}
+.ba-card.before{border-top:4px solid #e74c3c}
+.ba-card.after{border-top:4px solid var(--c-success)}
+.ba-card h3{font-size:var(--fs-card-title);font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.ba-card ul{list-style:none;padding:0}
+.ba-card li{font-size:var(--fs-body);padding:8px 0;border-bottom:1px solid var(--c-border);display:flex;align-items:flex-start;gap:8px;line-height:1.6}
+.ba-card li:last-child{border:none}
+.ba-arrow{display:flex;align-items:center;justify-content:center;font-size:2rem;color:var(--c-brand);font-weight:800}
+
+/* === Solution === */
+.solution{background:var(--c-bg-blue)}
+.sol-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.sol-card{background:#fff;border-radius:var(--radius);padding:28px;text-align:center;box-shadow:var(--shadow);transition:transform .2s,box-shadow .2s}
+.sol-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-hover)}
+.sol-card .sol-icon{width:64px;height:64px;margin:0 auto 16px}
+.sol-card h3{font-size:var(--fs-card-title);font-weight:700;color:var(--c-brand);margin-bottom:8px}
+.sol-card p{font-size:var(--fs-body);color:var(--c-text-light);line-height:1.7}
+.sol-card .sol-tag{display:inline-block;background:var(--c-brand-pale);color:var(--c-brand);font-size:var(--fs-small);font-weight:600;padding:2px 10px;border-radius:12px;margin-top:12px}
+
+/* === Consent === */
+.consent-section{background:var(--c-bg-warm)}
+.consent-inner{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center}
+.consent-points{display:flex;flex-direction:column;gap:16px}
+.consent-point{display:flex;gap:12px;align-items:flex-start}
+.consent-point .cp-icon{width:40px;height:40px;min-width:40px;background:var(--c-success);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:1.1rem}
+.consent-point h4{font-size:var(--fs-card-title);font-weight:700;margin-bottom:2px}
+.consent-point p{font-size:var(--fs-body);color:var(--c-text-light)}
+
+/* === Benefits === */
+.benefit-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.benefit-card{background:#fff;border-radius:var(--radius);padding:28px;box-shadow:var(--shadow);display:flex;gap:16px;align-items:flex-start}
+.benefit-card .bf-badge{min-width:48px;height:48px;background:linear-gradient(135deg,var(--c-brand),var(--c-brand-light));border-radius:12px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:1.2rem}
+.benefit-card h3{font-size:var(--fs-card-title);font-weight:700;margin-bottom:4px}
+.benefit-card p{font-size:var(--fs-body);color:var(--c-text-light);line-height:1.7}
+
+/* === Story === */
+.story{background:var(--c-bg-warm)}
+.story-content{max-width:720px;margin:0 auto;text-align:center}
+.story-content blockquote{font-size:var(--fs-section-sub);color:var(--c-text);line-height:2;font-style:normal;position:relative;padding:24px 0}
+.story-content blockquote::before{content:"\201C";font-size:4rem;color:var(--c-brand-pale);position:absolute;top:-16px;left:-20px;font-family:serif}
+.story-meta{margin-top:20px;display:flex;align-items:center;justify-content:center;gap:12px}
+.story-meta .avatar{width:48px;height:48px;background:linear-gradient(135deg,var(--c-brand),var(--c-brand-light));border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1rem}
+.story-meta .info{text-align:left}
+.story-meta .name{font-weight:700;font-size:var(--fs-body)}
+.story-meta .role{font-size:var(--fs-small);color:var(--c-text-light)}
+
+/* === Steps === */
+.steps-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;counter-reset:step}
+.step-card{background:#fff;border-radius:var(--radius);padding:24px;box-shadow:var(--shadow);text-align:center;position:relative;counter-increment:step}
+.step-card::before{content:counter(step);display:flex;align-items:center;justify-content:center;width:36px;height:36px;background:var(--c-brand);color:#fff;border-radius:50%;font-weight:800;font-size:.9rem;margin:0 auto 12px}
+.step-card h3{font-size:var(--fs-card-title);font-weight:700;margin-bottom:4px}
+.step-card p{font-size:var(--fs-body);color:var(--c-text-light)}
+.step-card .step-time{font-size:var(--fs-small);color:var(--c-success);font-weight:600;margin-top:8px}
+
+/* === Risk Reversal === */
+.risk{background:var(--c-bg-blue)}
+.risk-inner{max-width:640px;margin:0 auto;text-align:center}
+.risk-badges{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-top:24px}
+.risk-badge{background:#fff;border-radius:var(--radius);padding:16px 24px;box-shadow:var(--shadow);display:flex;align-items:center;gap:10px}
+.risk-badge .rb-icon{color:var(--c-success);font-size:1.3rem;font-weight:800}
+.risk-badge span{font-size:var(--fs-body);font-weight:600}
+
+/* === FAQ === */
+.faq-list{max-width:720px;margin:0 auto}
+.faq-item{border-bottom:1px solid var(--c-border);padding:20px 0}
+.faq-q{font-size:var(--fs-card-title);font-weight:700;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.faq-q::after{content:"+";font-size:1.3rem;color:var(--c-brand);transition:transform .2s;min-width:20px;text-align:center}
+.faq-item.open .faq-q::after{transform:rotate(45deg)}
+.faq-a{font-size:var(--fs-body);color:var(--c-text-light);line-height:1.8;max-height:0;overflow:hidden;transition:max-height .3s ease,padding .3s ease;padding-top:0}
+.faq-item.open .faq-a{max-height:200px;padding-top:12px}
+
+/* === Final CTA === */
+.cta-final{background:linear-gradient(135deg,var(--c-brand) 0%,#1a3a6b 40%,#2d5a8e 100%);padding:clamp(48px,6vw,80px) 0;text-align:center}
+.cta-final h2{font-size:var(--fs-cta-title);font-weight:800;color:#fff;margin-bottom:8px}
+.cta-final .cta-sub{color:rgba(255,255,255,.8);font-size:var(--fs-section-sub);margin-bottom:24px}
+.cta-final .cta-limit{display:inline-block;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:8px;padding:8px 20px;color:#fff;font-size:var(--fs-body);font-weight:600;margin-bottom:20px}
+.cta-final .cta-micro{color:rgba(255,255,255,.6);font-size:var(--fs-small);margin-top:16px}
+
+/* === Footer === */
+.footer{background:#1a2332;color:rgba(255,255,255,.6);padding:32px 0;text-align:center;font-size:var(--fs-small)}
+.footer a{color:rgba(255,255,255,.8);text-decoration:none}
+
+/* === Modal === */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.active{display:flex}
+.modal{background:#fff;border-radius:16px;max-width:480px;width:100%;padding:36px;position:relative;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.modal-close{position:absolute;top:12px;right:16px;background:none;border:none;font-size:1.5rem;color:var(--c-text-light);cursor:pointer}
+.modal h2{font-size:var(--fs-section-title);font-weight:800;color:var(--c-brand);margin-bottom:4px}
+.modal .modal-sub{font-size:var(--fs-body);color:var(--c-text-light);margin-bottom:20px}
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-size:var(--fs-body);font-weight:600;margin-bottom:4px}
+.form-group input,.form-group select{width:100%;padding:12px;border:1px solid var(--c-border);border-radius:8px;font-size:var(--fs-body);font-family:inherit;transition:border-color .2s}
+.form-group input:focus,.form-group select:focus{outline:none;border-color:var(--c-brand)}
+.form-submit{width:100%;background:var(--c-accent);color:#fff;border:none;padding:14px;border-radius:10px;font-size:var(--fs-btn);font-weight:700;cursor:pointer;font-family:inherit;transition:background .2s}
+.form-submit:hover{background:var(--c-accent-hover)}
+.form-micro{text-align:center;font-size:var(--fs-small);color:var(--c-text-light);margin-top:12px}
+.form-thanks{display:none;text-align:center;padding:24px 0}
+.form-thanks h3{font-size:var(--fs-section-title);font-weight:800;color:var(--c-brand);margin-bottom:8px}
+.form-thanks p{font-size:var(--fs-body);color:var(--c-text-light);line-height:1.8}
+
+/* === Floating CTA === */
+.floating-cta{position:fixed;bottom:20px;right:20px;z-index:50;opacity:0;transform:translateY(20px);transition:opacity .3s,transform .3s;pointer-events:none}
+.floating-cta.visible{opacity:1;transform:translateY(0);pointer-events:auto}
+.floating-cta button{background:var(--c-accent);color:#fff;border:none;padding:14px 24px;border-radius:50px;font-size:var(--fs-btn);font-weight:700;cursor:pointer;box-shadow:0 4px 20px rgba(230,126,34,.4);transition:all .2s;font-family:inherit;display:flex;align-items:center;gap:8px}
+.floating-cta button:hover{background:var(--c-accent-hover);transform:translateY(-2px)}
+
+/* === Reveal animation === */
+.reveal{opacity:0;transform:translateY(40px);transition:opacity .8s cubic-bezier(.16,1,.3,1),transform .8s cubic-bezier(.16,1,.3,1)}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+/* === Responsive === */
+@media(max-width:768px){
+  .hero-inner{grid-template-columns:1fr;text-align:center}
+  .hero-svg{order:-1;max-width:320px}
+  .hero-cta-group{justify-content:center}
+  .ba-grid{grid-template-columns:1fr;gap:12px}
+  .ba-arrow{transform:rotate(90deg)}
+  .sol-grid{grid-template-columns:1fr}
+  .consent-inner{grid-template-columns:1fr}
+  .benefit-grid{grid-template-columns:1fr}
+  .steps-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:480px){
+  .steps-grid{grid-template-columns:1fr}
+  .trust-items{gap:16px}
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="header" id="header">
+  <div class="header-inner">
+    <a href="#" class="logo">
+      <svg class="logo-icon" viewBox="0 0 36 36"><rect width="36" height="36" rx="8" fill="#1e3a5f"/><text x="18" y="25" text-anchor="middle" fill="#fff" font-size="16" font-weight="800" font-family="Noto Sans JP,sans-serif">鏡</text></svg>
+      <span class="logo-text">KAGAMI AI</span>
+    </a>
+    <button class="header-cta" onclick="openModal()">無料相談を予約</button>
+  </div>
+</header>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-inner">
+      <div class="hero-text">
+        <h1><span class="nb">従業員の貢献を、</span><span class="nb">AIが見つけて</span><span class="nb">伝える。</span></h1>
+        <p class="subtitle"><span class="nb">1on1の質が変わる。</span><span class="nb">組織の状態が一目でわかる。</span><br><span class="nb">中小企業のための</span><span class="nb">AI人事変革SaaS。</span></p>
+        <div class="hero-cta-group">
+          <button class="btn-primary" onclick="openModal()">&#x1f4ac; まずは30分、話してみる</button>
+        </div>
+        <p class="hero-micro">オンライン無料相談。無理な営業は一切しません。</p>
+      </div>
+      <div class="hero-svg">
+        <svg viewBox="0 0 420 320" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="hg1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#1e3a5f"/><stop offset="100%" style="stop-color:#2d5a8e"/></linearGradient>
+            <linearGradient id="hg2" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" style="stop-color:#27ae60"/><stop offset="100%" style="stop-color:#2ecc71"/></linearGradient>
+            <filter id="hs" x="-5%" y="-5%" width="112%" height="118%"><feDropShadow dx="0" dy="3" stdDeviation="5" flood-color="#1e3a5f" flood-opacity=".12"/></filter>
+          </defs>
+          <!-- Dashboard frame -->
+          <rect x="20" y="20" width="380" height="280" rx="16" fill="#fff" filter="url(#hs)" stroke="#e0e6ed" stroke-width="1"/>
+          <rect x="20" y="20" width="380" height="40" rx="16" fill="url(#hg1)"/>
+          <rect x="20" y="44" width="380" height="16" fill="url(#hg1)"/>
+          <circle cx="44" cy="40" r="5" fill="#e74c3c" opacity=".8"/><circle cx="62" cy="40" r="5" fill="#f39c12" opacity=".8"/><circle cx="80" cy="40" r="5" fill="#2ecc71" opacity=".8"/>
+          <text x="210" y="44" text-anchor="middle" fill="rgba(255,255,255,.8)" font-size="10" font-weight="600">KAGAMI AI Dashboard</text>
+          <!-- KPI cards -->
+          <g filter="url(#hs)"><rect x="40" y="76" width="100" height="56" rx="8" fill="#fff"/></g>
+          <text x="52" y="94" fill="#6b7b8d" font-size="8" font-weight="500">貢献スコア</text>
+          <text x="52" y="118" fill="#1e3a5f" font-size="20" font-weight="800">87</text>
+          <text x="84" y="118" fill="#27ae60" font-size="9" font-weight="600">+12%</text>
+          <g filter="url(#hs)"><rect x="160" y="76" width="100" height="56" rx="8" fill="#fff"/></g>
+          <text x="172" y="94" fill="#6b7b8d" font-size="8" font-weight="500">1on1実施率</text>
+          <text x="172" y="118" fill="#1e3a5f" font-size="20" font-weight="800">94%</text>
+          <text x="212" y="118" fill="#27ae60" font-size="9" font-weight="600">+8%</text>
+          <g filter="url(#hs)"><rect x="280" y="76" width="100" height="56" rx="8" fill="#fff"/></g>
+          <text x="292" y="94" fill="#6b7b8d" font-size="8" font-weight="500">エンゲージメント</text>
+          <text x="292" y="118" fill="#1e3a5f" font-size="20" font-weight="800">4.2</text>
+          <text x="322" y="118" fill="#27ae60" font-size="9" font-weight="600">+0.6</text>
+          <!-- Heatmap -->
+          <text x="52" y="152" fill="#6b7b8d" font-size="9" font-weight="600">部署別ヒートマップ</text>
+          <rect x="40" y="160" width="56" height="32" rx="4" fill="#27ae60" opacity=".8"/><text x="68" y="180" text-anchor="middle" fill="#fff" font-size="8" font-weight="600">営業部</text>
+          <rect x="104" y="160" width="56" height="32" rx="4" fill="#2ecc71" opacity=".7"/><text x="132" y="180" text-anchor="middle" fill="#fff" font-size="8" font-weight="600">開発部</text>
+          <rect x="168" y="160" width="56" height="32" rx="4" fill="#f39c12" opacity=".8"/><text x="196" y="180" text-anchor="middle" fill="#fff" font-size="8" font-weight="600">管理部</text>
+          <rect x="232" y="160" width="56" height="32" rx="4" fill="#e74c3c" opacity=".6"/><text x="260" y="180" text-anchor="middle" fill="#fff" font-size="8" font-weight="600">製造部</text>
+          <rect x="296" y="160" width="56" height="32" rx="4" fill="#27ae60" opacity=".6"/><text x="324" y="180" text-anchor="middle" fill="#fff" font-size="8" font-weight="600">企画部</text>
+          <!-- Chat preview -->
+          <text x="52" y="214" fill="#6b7b8d" font-size="9" font-weight="600">今日のフィードバック</text>
+          <rect x="40" y="222" width="220" height="28" rx="6" fill="#e8f0fa"/>
+          <text x="52" y="240" fill="#1e3a5f" font-size="8.5">&#x1f389; 田中さんの提案書、顧客に好評でした！</text>
+          <rect x="40" y="256" width="200" height="28" rx="6" fill="#e8f0fa"/>
+          <text x="52" y="274" fill="#1e3a5f" font-size="8.5">&#x2728; 鈴木さんが後輩の指導に時間を割いています</text>
+          <!-- Animated pulse -->
+          <circle cx="366" cy="86" r="4" fill="#27ae60"><animate attributeName="r" values="3;6;3" dur="2s" repeatCount="indefinite"/><animate attributeName="opacity" values="1;.4;1" dur="2s" repeatCount="indefinite"/></circle>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Trust Bar -->
+<div class="trust-bar">
+  <div class="container">
+    <div class="trust-items">
+      <div class="trust-item"><span class="num">2年+</span><span class="label">自社AI経営OS稼働実績</span></div>
+      <div class="trust-item"><span class="num">87%</span><span class="label">1on1満足度向上</span></div>
+      <div class="trust-item"><span class="num">3分</span><span class="label">マネージャーの準備時間</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- Problems -->
+<section class="section problems reveal">
+  <div class="container">
+    <div class="section-header">
+      <span class="tag">こんな課題、ありませんか？</span>
+      <h2><span class="nb">「頑張っているのに、</span><span class="nb">誰にも気づかれない」</span></h2>
+    </div>
+    <div class="problem-grid">
+      <div class="problem-card">
+        <div class="icon">&#x1f4cb;</div>
+        <h3>1on1が形骸化している</h3>
+        <p>話すことがなくて沈黙。部下の日々の行動を把握できず、表面的な会話で終わる。</p>
+      </div>
+      <div class="problem-card">
+        <div class="icon">&#x1f50d;</div>
+        <h3>現場の状態が見えない</h3>
+        <p>退職の相談が来て初めて問題に気づく。部署ごとの温度感を把握する手段がない。</p>
+      </div>
+      <div class="problem-card">
+        <div class="icon">&#x1f614;</div>
+        <h3>頑張りが評価されない</h3>
+        <p>数字に出ない貢献は見えない。黙って支えている人ほど、報われていない。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA Mid 1 -->
+<div class="cta-mid reveal">
+  <div class="container">
+    <h2><span class="nb">この課題、</span><span class="nb">AIで解決できます。</span></h2>
+    <p>30分のオンライン相談で、御社の状況に合った活用方法をお伝えします。</p>
+    <button class="btn-white" onclick="openModal()">&#x1f4ac; 無料で相談する</button>
+  </div>
+</div>
+
+<!-- Before/After -->
+<section class="section reveal">
+  <div class="container">
+    <div class="section-header">
+      <span class="tag">Before / After</span>
+      <h2><span class="nb">KAGAMI AIを導入すると、</span><span class="nb">何が変わるのか</span></h2>
+    </div>
+    <div class="ba-grid">
+      <div class="ba-card before">
+        <h3><span style="color:#e74c3c">&#x2716;</span> Before</h3>
+        <ul>
+          <li><span>&#x1f6ab;</span>1on1で何を話せばいいかわからない</li>
+          <li><span>&#x1f6ab;</span>部署の雰囲気は「なんとなく」でしか把握できない</li>
+          <li><span>&#x1f6ab;</span>退職の相談が来てから慌てる</li>
+          <li><span>&#x1f6ab;</span>頑張っている人が報われず、静かに辞めていく</li>
+        </ul>
+      </div>
+      <div class="ba-arrow">→</div>
+      <div class="ba-card after">
+        <h3><span style="color:#27ae60">&#x2714;</span> After</h3>
+        <ul>
+          <li><span>&#x2705;</span>AIが部下の貢献を事前に整理。1on1が具体的な対話に変わる</li>
+          <li><span>&#x2705;</span>ヒートマップで部署ごとの状態がひと目でわかる</li>
+          <li><span>&#x2705;</span>変化の兆候を早期に検知。先手が打てる</li>
+          <li><span>&#x2705;</span>「見てくれている」安心感が、従業員の定着につながる</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Solution -->
+<section class="section solution reveal">
+  <div class="container">
+    <div class="section-header">
+      <span class="tag">KAGAMI AIの3つの機能</span>
+      <h2><span class="nb">シンプルに、</span><span class="nb">3つのことだけをやる</span></h2>
+    </div>
+    <div class="sol-grid">
+      <div class="sol-card">
+        <svg class="sol-icon" viewBox="0 0 64 64"><circle cx="32" cy="32" r="30" fill="#e8f0fa"/><circle cx="32" cy="24" r="10" fill="none" stroke="#1e3a5f" stroke-width="2.5"/><path d="M16 48c0-8.8 7.2-16 16-16s16 7.2 16 16" fill="none" stroke="#1e3a5f" stroke-width="2.5"/><circle cx="48" cy="18" r="8" fill="#27ae60"/><text x="48" y="22" text-anchor="middle" fill="#fff" font-size="10" font-weight="800">&#x2714;</text></svg>
+        <h3>貢献を見つける</h3>
+        <p>日報・チャット・タスクからAIが「数字に出ない貢献」を自動で検出。</p>
+        <span class="sol-tag">従業員向け</span>
+      </div>
+      <div class="sol-card">
+        <svg class="sol-icon" viewBox="0 0 64 64"><circle cx="32" cy="32" r="30" fill="#e8f0fa"/><rect x="12" y="16" width="40" height="32" rx="4" fill="none" stroke="#1e3a5f" stroke-width="2.5"/><rect x="16" y="22" width="10" height="8" rx="2" fill="#27ae60" opacity=".7"/><rect x="28" y="22" width="10" height="12" rx="2" fill="#e67e22" opacity=".7"/><rect x="40" y="22" width="8" height="6" rx="2" fill="#1e3a5f" opacity=".3"/><rect x="16" y="34" width="20" height="8" rx="2" fill="#2d5a8e" opacity=".5"/><rect x="38" y="34" width="10" height="8" rx="2" fill="#27ae60" opacity=".5"/></svg>
+        <h3>組織を映す</h3>
+        <p>部署ごとのヒートマップで、組織全体の温度感をリアルタイムに可視化。</p>
+        <span class="sol-tag">経営者向け</span>
+      </div>
+      <div class="sol-card">
+        <svg class="sol-icon" viewBox="0 0 64 64"><circle cx="32" cy="32" r="30" fill="#e8f0fa"/><rect x="14" y="20" width="36" height="28" rx="6" fill="none" stroke="#1e3a5f" stroke-width="2.5"/><circle cx="24" cy="30" r="4" fill="#1e3a5f"/><circle cx="40" cy="30" r="4" fill="#1e3a5f"/><path d="M22 40 c4 4 16 4 20 0" fill="none" stroke="#1e3a5f" stroke-width="2" stroke-linecap="round"/><path d="M30 12 l2-6 l2 6" fill="none" stroke="#e67e22" stroke-width="2" stroke-linecap="round"/></svg>
+        <h3>1on1を支える</h3>
+        <p>貢献データをもとにAIが対話のきっかけを自動生成。マネージャーの準備が3分に。</p>
+        <span class="sol-tag">マネージャー向け</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Consent-first -->
+<section class="section consent-section reveal">
+  <div class="container">
+    <div class="section-header">
+      <span class="tag">設計思想</span>
+      <h2><span class="nb">Consent-first。</span><span class="nb">同意が、すべての起点。</span></h2>
+      <p>監視ツールではありません。従業員が「使いたい」と思える設計です。</p>
+    </div>
+    <div class="consent-inner">
+      <div class="consent-points">
+        <div class="consent-point">
+          <div class="cp-icon">&#x2714;</div>
+          <div><h4>従業員が自分で選ぶ</h4><p>共有する情報は本人が選択。会社が一方的に収集しない。</p></div>
+        </div>
+        <div class="consent-point">
+          <div class="cp-icon">&#x2714;</div>
+          <div><h4>褒めるために使う</h4><p>データは「評価」ではなく「承認」に使う。減点ではなく加点の文化をつくる。</p></div>
+        </div>
+        <div class="consent-point">
+          <div class="cp-icon">&#x2714;</div>
+          <div><h4>いつでもやめられる</h4><p>データ削除も共有停止もワンクリック。心理的安全性が前提。</p></div>
+        </div>
+      </div>
+      <div>
+        <svg viewBox="0 0 360 280" xmlns="http://www.w3.org/2000/svg">
+          <defs><filter id="cs" x="-5%" y="-5%" width="112%" height="118%"><feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#1e3a5f" flood-opacity=".1"/></filter></defs>
+          <rect x="0" y="0" width="360" height="280" rx="16" fill="#fff" filter="url(#cs)"/>
+          <!-- Employee circle -->
+          <circle cx="180" cy="80" r="36" fill="#e8f0fa" stroke="#1e3a5f" stroke-width="2"/>
+          <text x="180" y="74" text-anchor="middle" fill="#1e3a5f" font-size="20">&#x1f64b;</text>
+          <text x="180" y="96" text-anchor="middle" fill="#1e3a5f" font-size="9" font-weight="700">従業員</text>
+          <!-- Consent toggle -->
+          <rect x="130" y="128" width="100" height="28" rx="14" fill="#27ae60"/>
+          <circle cx="212" cy="142" r="10" fill="#fff"/>
+          <text x="162" y="146" fill="#fff" font-size="9" font-weight="700">同意ON</text>
+          <!-- Arrow down -->
+          <path d="M180 160 L180 185" stroke="#27ae60" stroke-width="2" marker-end="url(#arr-g)"/>
+          <defs><marker id="arr-g" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#27ae60"/></marker></defs>
+          <!-- Data flow -->
+          <rect x="100" y="190" width="160" height="36" rx="8" fill="#e8f0fa"/>
+          <text x="180" y="212" text-anchor="middle" fill="#1e3a5f" font-size="10" font-weight="600">貢献データが流れる</text>
+          <!-- Off state -->
+          <rect x="280" y="128" width="60" height="28" rx="14" fill="#ccc"/>
+          <circle cx="296" cy="142" r="10" fill="#fff"/>
+          <text x="280" y="170" fill="#6b7b8d" font-size="8">OFF→何も</text>
+          <text x="280" y="182" fill="#6b7b8d" font-size="8">共有されない</text>
+          <!-- Shield -->
+          <text x="40" y="160" font-size="28">&#x1f6e1;&#xfe0f;</text>
+          <text x="26" y="186" fill="#6b7b8d" font-size="8" font-weight="600">監視ゼロ</text>
+          <!-- Bottom message -->
+          <rect x="60" y="240" width="240" height="28" rx="8" fill="#27ae60" opacity=".1"/>
+          <text x="180" y="258" text-anchor="middle" fill="#27ae60" font-size="10" font-weight="700">「使いたい」から始まる人事DX</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Benefits -->
+<section class="section reveal">
+  <div class="container">
+    <div class="section-header">
+      <span class="tag">導入メリット</span>
+      <h2><span class="nb">経営者にも、</span><span class="nb">従業員にも、</span><span class="nb">価値がある</span></h2>
+    </div>
+    <div class="benefit-grid">
+      <div class="benefit-card">
+        <div class="bf-badge">&#x1f4ac;</div>
+        <div><h3>1on1の質が劇的に向上</h3><p>部下の貢献をAIが事前に整理。沈黙の1on1が、感謝と成長の対話に変わる。</p></div>
+      </div>
+      <div class="benefit-card">
+        <div class="bf-badge">&#x1f5fa;</div>
+        <div><h3>組織の状態がひと目でわかる</h3><p>ヒートマップで部署ごとの温度を把握。問題が大きくなる前に手が打てる。</p></div>
+      </div>
+      <div class="benefit-card">
+        <div class="bf-badge">&#x2728;</div>
+        <div><h3>「見てくれている」安心感</h3><p>日々の行動をAIが見つけて伝えてくれる。頑張りが報われる実感が生まれる。</p></div>
+      </div>
+      <div class="benefit-card">
+        <div class="bf-badge">&#x1f4c9;</div>
+        <div><h3>離職の予兆を早期検知</h3><p>エンゲージメントの変化を自動で検知。退職相談の前に、先手を打てる。</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA Mid 2 -->
+<div class="cta-mid reveal" id="cta-mid-2">
+  <div class="container">
+    <h2><span class="nb">まずは30分、</span><span class="nb">お話ししませんか？</span></h2>
+    <p>御社の課題をお聞かせください。最適な活用方法をご提案します。</p>
+    <button class="btn-white" onclick="openModal()">&#x1f4ac; 無料相談を予約する</button>
+  </div>
+</div>
+
+<!-- Story (Lv.0: 自社ストーリーで代替) -->
+<section class="section story reveal">
+  <div class="container">
+    <div class="section-header">
+      <span class="tag">なぜ作ったのか</span>
+      <h2><span class="nb">自社の経営で、</span><span class="nb">同じ課題を感じたから</span></h2>
+    </div>
+    <div class="story-content">
+      <blockquote><span class="nb">社員の頑張りに気づけず、</span><span class="nb">大切な人を失った。</span><br><span class="nb">その経験から、</span><span class="nb">自社のAI経営システムを2年かけて開発。</span><br><span class="nb">KAGAMI AIは、</span><span class="nb">その技術を</span><span class="nb">中小企業のために</span><span class="nb">パッケージ化したものです。</span></blockquote>
+      <div class="story-meta">
+        <div class="avatar">高</div>
+        <div class="info">
+          <div class="name">高木悠哉</div>
+          <div class="role">AI経営共創パートナーズ 代表</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Steps -->
+<section class="section reveal">
+  <div class="container">
+    <div class="section-header">
+      <span class="tag">導入ステップ</span>
+      <h2><span class="nb">最短2週間で、</span><span class="nb">静かに始められます</span></h2>
+    </div>
+    <div class="steps-grid">
+      <div class="step-card">
+        <h3>無料相談</h3>
+        <p>御社の課題と目指す姿をヒアリング</p>
+        <div class="step-time">30分・オンライン</div>
+      </div>
+      <div class="step-card">
+        <h3>プラン設計</h3>
+        <p>組織規模と課題に合わせた導入計画を作成</p>
+        <div class="step-time">1週間</div>
+      </div>
+      <div class="step-card">
+        <h3>小さく導入</h3>
+        <p>1部署・5人からスモールスタート</p>
+        <div class="step-time">2週間</div>
+      </div>
+      <div class="step-card">
+        <h3>全社展開</h3>
+        <p>効果を確認してから段階的に拡大</p>
+        <div class="step-time">1〜2ヶ月</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Risk Reversal -->
+<section class="section risk reveal">
+  <div class="container">
+    <div class="risk-inner">
+      <div class="section-header">
+        <h2><span class="nb">安心して、</span><span class="nb">ご相談ください</span></h2>
+        <p>無料相談は「売り込みの場」ではありません。</p>
+      </div>
+      <div class="risk-badges">
+        <div class="risk-badge"><span class="rb-icon">&#x2714;</span><span>無理な営業は一切しません</span></div>
+        <div class="risk-badge"><span class="rb-icon">&#x2714;</span><span>合わなければ正直にお伝えします</span></div>
+        <div class="risk-badge"><span class="rb-icon">&#x2714;</span><span>相談だけでもOKです</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="section reveal">
+  <div class="container">
+    <div class="section-header">
+      <span class="tag">よくある質問</span>
+      <h2>FAQ</h2>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">従業員に監視されている感覚を与えませんか？</div>
+        <div class="faq-a">KAGAMI AIはConsent-first設計です。従業員自身が共有する情報を選び、いつでも停止できます。データは「評価」ではなく「承認」に使います。導入企業では「見てくれている安心感がある」という声が多く聞かれます。</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">社員数が少なくても導入できますか？</div>
+        <div class="faq-a">5名から導入可能です。むしろ少人数の企業ほど、一人ひとりの貢献が見えることの効果が大きくなります。まずは1部署からのスモールスタートをおすすめしています。</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">既存の勤怠システムや日報ツールと連携できますか？</div>
+        <div class="faq-a">主要なビジネスチャット（Slack、Teams）、日報ツール、タスク管理ツールとAPI連携が可能です。詳しくは無料相談で御社の環境をお聞かせください。</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">導入にどのくらい手間がかかりますか？</div>
+        <div class="faq-a">初期設定は弊社が代行します。御社の担当者に必要な作業は、初回のヒアリング（30分）と、連携ツールの設定確認（15分程度）だけです。</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">費用はどのくらいですか？</div>
+        <div class="faq-a">従業員数に応じた月額制です。詳しい料金は無料相談でお伝えしますが、中小企業が無理なく続けられる価格設計にしています。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Final CTA -->
+<section class="cta-final reveal" id="cta-final">
+  <div class="container">
+    <h2><span class="nb">貢献を映す。</span><span class="nb">組織が変わる。</span></h2>
+    <p class="cta-sub"><span class="nb">まずは30分の無料相談から。</span><span class="nb">御社に合った活用方法をお伝えします。</span></p>
+    <div class="cta-limit">&#x1f4c5; 毎月5社限定で無料相談を受付中</div><br>
+    <button class="btn-primary" onclick="openModal()" style="font-size:clamp(.95rem,.85rem + .4vw,1.1rem);padding:16px 40px;">&#x1f4ac; 無料相談を予約する</button>
+    <p class="cta-micro">送信は30秒で完了します。</p>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="container">
+    <p>&copy; 2026 AI経営共創パートナーズ株式会社 / KAGAMI AI</p>
+  </div>
+</footer>
+
+<!-- Floating CTA -->
+<div class="floating-cta" id="floatingCta">
+  <button onclick="openModal()">&#x1f4ac; 無料相談</button>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">&times;</button>
+    <div id="formContent">
+      <h2>無料相談を予約する</h2>
+      <p class="modal-sub">30分のオンライン相談。1営業日以内にご連絡します。</p>
+      <form id="contactForm" action="https://formspree.io/f/{YOUR_FORM_ID}" method="POST">
+        <div class="form-group">
+          <label>お名前 <span style="color:#e74c3c">*</span></label>
+          <input type="text" name="name" required placeholder="山田 太郎">
+        </div>
+        <div class="form-group">
+          <label>会社名 <span style="color:#e74c3c">*</span></label>
+          <input type="text" name="company" required placeholder="株式会社○○">
+        </div>
+        <div class="form-group">
+          <label>メールアドレス <span style="color:#e74c3c">*</span></label>
+          <input type="email" name="email" required placeholder="taro@example.co.jp">
+        </div>
+        <div class="form-group">
+          <label>気になっている課題（任意）</label>
+          <select name="challenge">
+            <option value="">選択してください</option>
+            <option value="1on1">1on1が形骸化している</option>
+            <option value="visibility">現場の状態が見えない</option>
+            <option value="turnover">離職率が高い</option>
+            <option value="engagement">エンゲージメントを上げたい</option>
+            <option value="other">その他</option>
+          </select>
+        </div>
+        <button type="submit" class="form-submit">この内容で送信する</button>
+        <p class="form-micro">送信後、1営業日以内にメールでご連絡します。</p>
+      </form>
+    </div>
+    <div class="form-thanks" id="formThanks">
+      <h3>ありがとうございます！</h3>
+      <p>1営業日以内にメールでご連絡します。<br>相談では、御社の状況をお聞きした上で<br>最適な活用方法をご提案します。</p>
+      <p style="margin-top:20px;font-size:var(--fs-body);color:var(--c-brand);font-weight:600;">&#x1f4e9; 確認メールをお送りしました</p>
+    </div>
+  </div>
+</div>
+
+<script>
+// Header scroll
+const header=document.getElementById('header');
+window.addEventListener('scroll',()=>{header.classList.toggle('scrolled',window.scrollY>10)});
+
+// Floating CTA
+const floatingCta=document.getElementById('floatingCta');
+const observer1=new IntersectionObserver(([e])=>{floatingCta.classList.toggle('visible',!e.isIntersecting)},{threshold:0});
+observer1.observe(document.querySelector('.hero'));
+
+// Reveal animation
+const reveals=document.querySelectorAll('.reveal');
+const revealObserver=new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');revealObserver.unobserve(e.target)}})},{threshold:.15});
+reveals.forEach(r=>revealObserver.observe(r));
+
+// FAQ
+function toggleFaq(el){el.parentElement.classList.toggle('open')}
+
+// Modal
+function openModal(){
+  document.getElementById('modalOverlay').classList.add('active');
+  document.body.style.overflow='hidden';
+  if(typeof fbq!=='undefined')fbq('track','ViewContent');
+  if(typeof gtag!=='undefined')gtag('event','form_open',{event_category:'engagement'});
+}
+function closeModal(){
+  document.getElementById('modalOverlay').classList.remove('active');
+  document.body.style.overflow='';
+}
+
+// Form submit
+document.getElementById('contactForm').addEventListener('submit',function(e){
+  e.preventDefault();
+  const form=this;
+  const data=new FormData(form);
+  fetch(form.action,{method:'POST',body:data,headers:{'Accept':'application/json'}})
+    .then(r=>{
+      if(r.ok){
+        document.getElementById('formContent').style.display='none';
+        document.getElementById('formThanks').style.display='block';
+        if(typeof fbq!=='undefined')fbq('track','Lead');
+        if(typeof gtag!=='undefined')gtag('event','generate_lead',{event_category:'conversion'});
+      }
+    })
+    .catch(()=>{alert('送信に失敗しました。お手数ですが、もう一度お試しください。')});
+});
+
+// Scroll depth tracking
+const ctaMid2=document.getElementById('cta-mid-2');
+const ctaFinal=document.getElementById('cta-final');
+if(ctaMid2){const o=new IntersectionObserver(([e])=>{if(e.isIntersecting&&typeof gtag!=='undefined'){gtag('event','scroll_depth',{percent:50});o.disconnect()}},{threshold:.5});o.observe(ctaMid2)}
+if(ctaFinal){const o=new IntersectionObserver(([e])=>{if(e.isIntersecting&&typeof gtag!=='undefined'){gtag('event','scroll_depth',{percent:100});o.disconnect()}},{threshold:.5});o.observe(ctaFinal)}
+</script>
+
+<!-- Meta Pixel (replace {YOUR_PIXEL_ID}) -->
+<script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','{YOUR_PIXEL_ID}');fbq('track','PageView');</script>
+
+<!-- GA4 (replace {GA_MEASUREMENT_ID}) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id={GA_MEASUREMENT_ID}"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','{GA_MEASUREMENT_ID}');</script>
+
+</body>
+</html>
