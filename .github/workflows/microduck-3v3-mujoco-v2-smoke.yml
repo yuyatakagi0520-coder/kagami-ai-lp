@@ -1,0 +1,86 @@
+name: Microduck six-body MuJoCo 3v3 v2 smoke
+
+on:
+  push:
+    branches:
+      - tmp-microduck-3v3-mujoco-v2-smoke-20260901-01
+
+permissions:
+  contents: read
+
+env:
+  PYTHONUNBUFFERED: "1"
+  MUJOCO_GL: egl
+  PYOPENGL_PLATFORM: egl
+
+jobs:
+  smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Reconstruct calibrated runner
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE=experiments/microduck_3v3_mujoco/build_and_run.py.gz.b64
+          cat "${BASE}.part00" "${BASE}.part01" \
+              "${BASE}.rem00" "${BASE}.rem01" "${BASE}.rem02" "${BASE}.rem03" \
+              "${BASE}.rem04" "${BASE}.rem05" "${BASE}.rem06" "${BASE}.rem07" \
+              > /tmp/runner.b64
+          echo "8f1f9baf285405b14c6fd3729799412b3a9e6b228f4b2898f242807927a354e4  /tmp/runner.b64" | sha256sum -c -
+          base64 -d /tmp/runner.b64 | gzip -d > experiments/microduck_3v3_mujoco/build_and_run.py
+          python experiments/microduck_3v3_mujoco/patch_v2.py experiments/microduck_3v3_mujoco/build_and_run.py
+          python -m py_compile experiments/microduck_3v3_mujoco/build_and_run.py
+
+      - name: Clone official simulator
+        run: git clone --depth 1 https://huggingface.co/spaces/pollen-robotics/microduck-simulator upstream
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends libegl1 libgl1 libopengl0 libosmesa6
+          python -m pip install --upgrade pip
+          python -m pip install "mujoco>=3.3,<4" "onnxruntime>=1.20,<2" "numpy>=1.26,<3" "lxml>=5,<7" "imageio>=2.34,<3" "imageio-ffmpeg>=0.5,<1" "pillow>=10,<13"
+
+      - name: Run calibrated six-body smoke match
+        run: |
+          mkdir -p artifacts
+          set -o pipefail
+          python experiments/microduck_3v3_mujoco/build_and_run.py \
+            --source-app upstream/app \
+            --output artifacts \
+            --duration 12 \
+            --no-render \
+            2>&1 | tee artifacts/run.log
+
+      - name: Evaluate smoke result
+        if: always()
+        run: |
+          test ! -f artifacts/run_report.json || python - <<'PY'
+          import json
+          from pathlib import Path
+          r = json.loads(Path('artifacts/run_report.json').read_text())
+          print(json.dumps({
+              'model': r['model'],
+              'kick_calibration': r['kick_calibration'],
+              'goal_return_validation': r['goal_return_validation'],
+              'match_score': r['match']['score'],
+              'match_metrics': r['match']['metrics'],
+              'ducks': r['match']['ducks'],
+              'verdict_inputs': r['match']['verdict_inputs'],
+          }, indent=2))
+          PY
+
+      - name: Upload smoke evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: microduck-3v3-six-body-mujoco-v2-smoke
+          path: artifacts
+          if-no-files-found: error
+          retention-days: 7
