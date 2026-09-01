@@ -1,0 +1,77 @@
+name: Microduck real simulator probe
+
+on:
+  push:
+    branches:
+      - tmp-microduck-real-sim-20260901-01
+
+permissions:
+  contents: read
+
+env:
+  FORCE_COLOR: "0"
+  CI: "1"
+
+jobs:
+  probe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - name: Checkout probe harness
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Clone official Microduck simulator
+        run: |
+          git clone --depth 1 https://huggingface.co/spaces/pollen-robotics/microduck-simulator simulator
+          git -C simulator rev-parse HEAD | tee upstream-commit.txt
+
+      - name: Install simulator and Playwright
+        working-directory: simulator/app
+        run: |
+          npm ci
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
+
+      - name: Add deterministic probe switch
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('simulator/app/src/game/game.js')
+          text = path.read_text()
+          old = '  let running = true;\n  (async function controlLoop() {'
+          new = '''  // Probe-only query switch: preserve the exact MuJoCo/ONNX controller,\n  // but stop the concurrent wall-clock loop so automated measurements can\n  // advance the exported 50 Hz control step deterministically.\n  let running = new URLSearchParams(location.search).get("manual") !== "1";\n  (async function controlLoop() {'''
+          if old not in text:
+              raise SystemExit('control-loop patch point not found')
+          path.write_text(text.replace(old, new, 1))
+          PY
+
+      - name: Build official simulator
+        working-directory: simulator/app
+        run: npm run build
+
+      - name: Operate simulator and record evidence
+        run: |
+          cp scripts/microduck-real-probe.mjs simulator/app/probe.mjs
+          cd simulator/app
+          node probe.mjs
+
+      - name: Print measured result
+        if: always()
+        run: |
+          if [ -f simulator/app/artifacts/results.json ]; then
+            cat simulator/app/artifacts/results.json
+          fi
+
+      - name: Upload screenshots, video, traces, and results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: microduck-real-simulator-evidence
+          path: simulator/app/artifacts
+          if-no-files-found: error
+          retention-days: 7
