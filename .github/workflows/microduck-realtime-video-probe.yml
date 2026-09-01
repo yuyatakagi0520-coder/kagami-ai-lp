@@ -1,0 +1,58 @@
+name: Microduck real-time video probe
+
+on:
+  push:
+    branches:
+      - tmp-microduck-real-video-20260901-01
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Clone official Microduck simulator
+        run: git clone --depth 1 https://huggingface.co/spaces/pollen-robotics/microduck-simulator simulator
+
+      - name: Install app and browser driver
+        working-directory: simulator/app
+        run: |
+          npm ci
+          npm install --no-save playwright@1.55.0
+          CHROME="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser || true)"
+          if [ -n "$CHROME" ]; then
+            echo "CHROME_BIN=$CHROME" >> "$GITHUB_ENV"
+            echo "Using system Chrome: $CHROME"
+          else
+            npx playwright install --with-deps chromium
+          fi
+
+      - name: Build unmodified official simulator
+        working-directory: simulator/app
+        run: npm run build
+
+      - name: Operate in real time and record video
+        run: |
+          cp scripts/microduck-realtime-video-probe.mjs simulator/app/probe.mjs
+          cd simulator/app
+          node probe.mjs
+
+      - name: Print result
+        if: always()
+        run: test ! -f simulator/app/artifacts/results.json || cat simulator/app/artifacts/results.json
+
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: microduck-real-time-video-evidence
+          path: simulator/app/artifacts
+          if-no-files-found: error
+          retention-days: 7
