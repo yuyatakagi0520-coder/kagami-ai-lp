@@ -1,0 +1,140 @@
+name: Microduck six-body MuJoCo 3v3
+
+on:
+  push:
+    branches:
+      - tmp-microduck-3v3-mujoco-20260901-01
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONUNBUFFERED: "1"
+  MUJOCO_GL: egl
+  PYOPENGL_PLATFORM: egl
+
+jobs:
+  simulate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Checkout simulation harness
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Reconstruct and verify six-body runner
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE=experiments/microduck_3v3_mujoco/build_and_run.py.gz.b64
+          cat \
+            "${BASE}.part00" \
+            "${BASE}.part01" \
+            "${BASE}.rem00" \
+            "${BASE}.rem01" \
+            "${BASE}.rem02" \
+            "${BASE}.rem03" \
+            "${BASE}.rem04" \
+            "${BASE}.rem05" \
+            "${BASE}.rem06" \
+            "${BASE}.rem07" \
+            > /tmp/build_and_run.py.gz.b64
+          test "$(wc -c < /tmp/build_and_run.py.gz.b64)" -eq 21916
+          echo "8f1f9baf285405b14c6fd3729799412b3a9e6b228f4b2898f242807927a354e4  /tmp/build_and_run.py.gz.b64" | sha256sum -c -
+          base64 -d /tmp/build_and_run.py.gz.b64 | gzip -d > experiments/microduck_3v3_mujoco/build_and_run.py
+          echo "c402a55097f0bfd5d23fd0b4a1dc8314b88b11b6cb549967e7d02b994e5bce05  experiments/microduck_3v3_mujoco/build_and_run.py" | sha256sum -c -
+          python -m py_compile experiments/microduck_3v3_mujoco/build_and_run.py
+
+      - name: Clone official Microduck simulator
+        run: |
+          git clone --depth 1 https://huggingface.co/spaces/pollen-robotics/microduck-simulator upstream
+          git -C upstream rev-parse HEAD | tee upstream-commit.txt
+
+      - name: Install native simulation dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends ffmpeg libegl1 libgl1 libopengl0 libosmesa6
+          python -m pip install --upgrade pip
+          python -m pip install \
+            "mujoco>=3.3,<4" \
+            "onnxruntime>=1.20,<2" \
+            "numpy>=1.26,<3" \
+            "lxml>=5,<7" \
+            "imageio>=2.34,<3" \
+            "imageio-ffmpeg>=0.5,<1" \
+            "pillow>=10,<13"
+
+      - name: Build six-duck world and run 3v3
+        run: |
+          mkdir -p artifacts
+          set -o pipefail
+          python experiments/microduck_3v3_mujoco/build_and_run.py \
+            --source-app upstream/app \
+            --output artifacts \
+            --duration 24 \
+            2>&1 | tee artifacts/run.log
+
+      - name: Validate core acceptance conditions
+        if: success()
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r = json.loads(Path('artifacts/run_report.json').read_text())
+          assert r['model']['duck_count'] == 6
+          assert r['model']['action_dimensions_total'] == 84
+          assert r['model']['observation_dimensions_total'] == 366
+          assert r['model']['nu'] == 84, r['model']
+          assert r['goal_return_validation']['returns_started'] >= 1, r['goal_return_validation']
+          assert r['goal_return_validation']['returns_completed'] >= 1, r['goal_return_validation']
+          assert r['goal_return_validation']['continuous_no_teleport'], r['goal_return_validation']
+          assert r['kick_calibration']['successful_trial_count'] >= 1, r['kick_calibration']
+          assert r['match']['verdict_inputs']['six_independent_ducks_loaded']
+          assert r['match']['verdict_inputs']['all_ducks_moved'], r['match']['ducks']
+          assert r['match']['verdict_inputs']['kick_executed'], r['match']['metrics']
+          assert r['match']['verdict_inputs']['ball_contacted'], r['match']['metrics']
+          assert r['match']['verdict_inputs']['ball_continuous'], r['match']['metrics']
+          print('CORE_ACCEPTANCE_OK')
+          PY
+
+      - name: Package evidence
+        if: always()
+        run: |
+          if [ -d artifacts ]; then
+            cp upstream-commit.txt artifacts/ 2>/dev/null || true
+            tar -czf microduck-3v3-mujoco-evidence.tar.gz artifacts
+          fi
+
+      - name: Print report summary
+        if: always()
+        run: |
+          test ! -f artifacts/run_report.json || python - <<'PY'
+          import json
+          from pathlib import Path
+          r = json.loads(Path('artifacts/run_report.json').read_text())
+          print(json.dumps({
+              'source': r['source'],
+              'model': r['model'],
+              'kick_calibration': r['kick_calibration'],
+              'goal_return_validation': r['goal_return_validation'],
+              'match_score': r['match']['score'],
+              'match_metrics': r['match']['metrics'],
+              'verdict_inputs': r['match']['verdict_inputs'],
+          }, indent=2))
+          PY
+
+      - name: Upload complete evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: microduck-3v3-six-body-mujoco-evidence
+          path: |
+            artifacts
+            microduck-3v3-mujoco-evidence.tar.gz
+          if-no-files-found: error
+          retention-days: 7
