@@ -1,0 +1,66 @@
+name: Microduck real simulator fast probe
+
+on:
+  push:
+    branches:
+      - tmp-microduck-real-sim-fast-20260901-01
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Clone official Microduck simulator
+        run: git clone --depth 1 https://huggingface.co/spaces/pollen-robotics/microduck-simulator simulator
+
+      - name: Install simulator and Chromium
+        working-directory: simulator/app
+        run: |
+          npm ci
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
+
+      - name: Enable deterministic stepping
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('simulator/app/src/game/game.js')
+          s = p.read_text()
+          old = '  let running = true;\n  (async function controlLoop() {'
+          new = '  let running = new URLSearchParams(location.search).get("manual") !== "1";\n  (async function controlLoop() {'
+          if old not in s:
+              raise SystemExit('patch point missing')
+          p.write_text(s.replace(old, new, 1))
+          PY
+
+      - name: Build simulator
+        working-directory: simulator/app
+        run: npm run build
+
+      - name: Run real-physics smoke measurements
+        run: |
+          cp scripts/microduck-fast-probe.mjs simulator/app/probe.mjs
+          cd simulator/app
+          node probe.mjs
+
+      - name: Print result
+        if: always()
+        run: test ! -f simulator/app/artifacts/results.json || cat simulator/app/artifacts/results.json
+
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: microduck-real-simulator-fast-evidence
+          path: simulator/app/artifacts
+          if-no-files-found: error
+          retention-days: 7
